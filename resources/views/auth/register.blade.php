@@ -68,6 +68,11 @@
                             </div>
                         </div>
                     </form>
+                    @if($register_error = Session::get('register_error'))
+                        <div class="alert alert-info">
+                            {{$register_error}}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -13,8 +13,12 @@
 
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 Auth::routes();
 
+//Route::get('/register', 'Auth\RegisterController@register')->name('register');
 Route::get('/home', 'HomeController@index');
-Route::get('users/confirmation/{email, token}', 'Auth\RegisterController@confirmation')->name('confirmation');
+Route::get('/users/confirmation/{token}', 'Auth\RegisterController@confirmation')->name('confirmation');
+Route::post('/login', 'Auth\LoginController@login')->name('login');
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
+//Route::get('/create', 'RegisterController@create')->name('createaccount');

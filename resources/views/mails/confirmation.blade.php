@@ -8,4 +8,4 @@
 ?>
 Hi {{$name}},
 <p>Please click the link to active account.</p>
-{{route('confirmation',$email,$token)}}
+{{route('confirmation',$token)}}

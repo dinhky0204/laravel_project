@@ -54,7 +54,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|max:255|min:6',
+            'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);
@@ -78,32 +78,35 @@ class RegisterController extends Controller
     protected function register(Request $request) {
         $input = $request->all();
         $validator = $this->validator($input);
-        if(!$validator->failed()) {
+        if($validator->fails()) {
+            return redirect()->back()->withInput()->with('register_error', $validator->messages());
+//            return redirect(route('login'))->with('login_error', $validator->messages());
+        }
+        else
+        {
+            User::where('email', $input['email'])->where('confirmed', 0)->delete();
             $data = $this->create($input)->toArray();
             $minutes = 120;
             $random_token = str_random(30);
             $data['token'] = $random_token;
-            Cache::add($data['email'], $random_token, $minutes);
-//            $data->save();
+            Cache::add($random_token, $data['email'], $minutes);
             Mail::send('mails.confirmation', $data, function ($message) use($data) {
                 $message->to($data['email']);
                 $message->subject('Registration Confirmation');
             });
             return redirect(route('login'))->with('status', 'Confirmation email has been send. Please check your email.');
         }
-        return redirect(route('login')->with('status', $validator->errors));
+
     }
-    public function confirmation($email, $token) {
-        $value = Cache::get($email);
-        $user = User::where('email',$email)->first;
-        var_dump($user);
-        die();
-        if (!isNull($value) && $token == $value['token']) {
+    public function confirmation($token) {
+        $value = Cache::get($token);
+        if (!is_null($value)) {
+            $user = User::where('email', $value)->first();
             $user->confirmed = 1;
             $user->save();
-            return redirect(route('login')->with('status', 'Your activation is completed.'));
+            return redirect(route('home'))->with('status', 'Your activation is completed.');
         }
-        return redirect(route('login')->with('status', 'Something went wrong.'));
+        return redirect(route('login'))->with('status', 'Something went wrong.');
     }
 
 }
