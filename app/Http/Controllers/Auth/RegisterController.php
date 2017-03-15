@@ -4,8 +4,14 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Symfony\Component\Console\Input\Input;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -68,4 +74,38 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
+
+    protected function register(Request $request) {
+        $input = $request->all();
+        $validator = $this->validator($input);
+        if($validator->fails()) {
+            return redirect()->back()->withInput()->with('register_error', $validator->messages());
+        }
+        else
+        {
+            User::where('email', $input['email'])->where('confirmed', 0)->delete();
+            $data = $this->create($input)->toArray();
+            $minutes = 1;
+            $random_token = str_random(30);
+            $data['token'] = $random_token;
+            Cache::add($random_token, $data['email'], $minutes);
+            Mail::send('mails.confirmation', $data, function ($message) use($data) {
+                $message->to($data['email']);
+                $message->subject('Registration Confirmation');
+            });
+            return redirect(route('login'))->with('status', '確認メールが送信されました。 メールを確認してください。');
+        }
+
+    }
+    public function confirmation($token) {
+        $value = Cache::get($token);
+        if (!is_null($value)) {
+            $user = User::where('email', $value)->first();
+            $user->confirmed = 1;
+            $user->save();
+            return redirect(route('home'))->with('status', 'Your activation is completed.');
+        }
+        return redirect(route('login'))->with('status', 'Something went wrong.');
+    }
+
 }
