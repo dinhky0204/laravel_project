@@ -49,22 +49,23 @@ class LoginController extends Controller
         return redirect(route('home'));
     }
     public function authenticate() {
-        if (Auth::attempt(['email' => $email, 'password' => $password, 'confirmed' => 1 ])) {
-            // Authentication passed...
-//            return redirect()->intended('dashboard');
-            return redirect(route('login'))->with('login_error','Login successfull');
-        }
-        else {
-            return redirect(route('login'))->with('login_error','Email or Password missing.');
-        }
+//        if (Auth::attempt(['email' => $email, 'password' => $password, 'confirmed' => 1 ])) {
+//            // Authentication passed...
+////            return redirect()->intended('dashboard');
+////            return redirect(route('login'))->with('login_error','Login successfull');
+//            return view('login')->with('login_error','You are logined.');
+//        }
+//        else {
+////            return redirect(route('login'))->with('login_error','Email or Password missing.');
+//            return view('login')->with('login_error','You are logined.');
+//        }
     }
     public function login(Request $request) {
         $input = $request->all();
-//        var_dump($input); die();
         $email = $input['email'];
         $password = $input['password'];
         if (Auth::attempt(['email' => $email, 'password' => $password, 'confirmed' => 1 ])) {
-            return view('login')->with('login_error','Email or Password missing.');
+            return view('home')->with('login_error','You are logined.');
         }
         else
             return redirect()->back()->with('login_error','Email or Password missing.');
@@ -72,8 +73,8 @@ class LoginController extends Controller
     }
     public function logout() {
         Auth::logout();
-//        return redirect(route('home'));
-        return view('auth/passwords/reset');
+        return redirect(route('home'));
+//        return view('auth/passwords/reset');
     }
 
 }

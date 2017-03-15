@@ -21,4 +21,7 @@ Route::get('/home', 'HomeController@index');
 Route::get('/users/confirmation/{token}', 'Auth\RegisterController@confirmation')->name('confirmation');
 Route::post('/login', 'Auth\LoginController@login')->name('login');
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('/confirm/resetpass/{token}','Auth\ResetPasswordController@resetPasswordConfirm')->name('confirmresetpass');
+Route::get('/passwordreset', 'Auth\ResetPasswordController@reset')->name('resetpassword');
+Route::post('/passwordreset/sendmail', 'Auth\ResetPasswordController@sendmailToReset')->name('sendmailToReset');
 //Route::get('/create', 'RegisterController@create')->name('createaccount');

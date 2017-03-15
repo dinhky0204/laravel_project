@@ -80,13 +80,12 @@ class RegisterController extends Controller
         $validator = $this->validator($input);
         if($validator->fails()) {
             return redirect()->back()->withInput()->with('register_error', $validator->messages());
-//            return redirect(route('login'))->with('login_error', $validator->messages());
         }
         else
         {
             User::where('email', $input['email'])->where('confirmed', 0)->delete();
             $data = $this->create($input)->toArray();
-            $minutes = 120;
+            $minutes = 1;
             $random_token = str_random(30);
             $data['token'] = $random_token;
             Cache::add($random_token, $data['email'], $minutes);
@@ -94,7 +93,7 @@ class RegisterController extends Controller
                 $message->to($data['email']);
                 $message->subject('Registration Confirmation');
             });
-            return redirect(route('login'))->with('status', 'Confirmation email has been send. Please check your email.');
+            return redirect(route('login'))->with('status', '確認メールが送信されました。 メールを確認してください。');
         }
 
     }

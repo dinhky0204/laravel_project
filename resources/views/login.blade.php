@@ -13,4 +13,9 @@
     <div class="alert alert-info">
         {{$login_error}}
     </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h2>Login successfull</h2>
 @endif

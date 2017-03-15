@@ -4,14 +4,23 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <h1>Hello,</h1>
-                <div class="panel-heading">Login successfull</div>
-
-                <div class="panel-body">
-                    You are logged in!
+            @if(Auth::guest())
+                <div class="panel panel-default">
+                    <h1>Hello, please login</h1>
                 </div>
-            </div>
+            @else
+                <div class="panel panel-default">
+                    <h1>Hello,</h1>
+                    <h2>Home page</h2>
+                </div>
+            @endif
+
+            @if($status = Session::get('status'))
+                <div class="alert alert-info">
+                    {{$status}}
+                </div>
+            @endif
+
         </div>
     </div>
 </div>
